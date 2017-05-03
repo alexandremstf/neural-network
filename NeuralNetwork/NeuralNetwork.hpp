@@ -14,24 +14,23 @@ private:
 	vector<vector<double>> output;
 	vector<vector<double>> weight_input;
 	vector<vector<double>> weight_output;
-	
-	double learning_rate;
+
+	int correct_output;
+	int hit_percent;
 
 	int max_epoch;
-	int percentage;
-	double limit_error;
-	double hit_percent;
-
-	int epoch = 0;
-	int cont = 0;
-	
+	double learning_rate;
+	double error_tolerance;
+		
 public:
 	NeuralNetwork(int, int);
-	NeuralNetwork(int, int, int);
+	NeuralNetwork(int, int, int, int, double, double);
+
 
 	void trainingDataset();
 	void testingDataset(vector<vector<double>>);
 	void initializeWeight();
+	void hitRate(vector<double>, unsigned int);
 
 	double sigmoid(double);	
 	double sigmoidPrime(double);
