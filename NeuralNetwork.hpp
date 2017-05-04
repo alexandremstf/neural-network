@@ -17,17 +17,18 @@ private:
 
 	int max_epoch;
 	int correct_output;
-	double hit_percent;
+	int hit_percent;
 	double desired_percent;
 	double learning_rate;
 	double error_tolerance;
 		
 public:
-	NeuralNetwork(int, int);
-	NeuralNetwork(int, int, int, int, double, double, double);
+	NeuralNetwork(vector<vector<double>>, vector<vector<double>>, int);
+	NeuralNetwork(vector<vector<double>>, vector<vector<double>>, int, int, int, double, double);
 
 
-	void trainingDataset();
+	void trainingNeuralNetwork();
+	void automaticTrainingNeuralNetwork();
 	void testingDataset(vector<vector<double>>);
 	void initializeWeight();
 	void hitRate(vector<double>, unsigned int);

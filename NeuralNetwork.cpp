@@ -1,28 +1,41 @@
 #include "NeuralNetwork.hpp"
 
-NeuralNetwork::NeuralNetwork(int n_input_layer, int n_output_layer){
-	//Automatic
-}
+NeuralNetwork::NeuralNetwork(vector<vector<double>> input_data, vector<vector<double>> output_data, int user_max_epoch){
+	input = input_data;
+    output = output_data;
 
-// number of inputs - number of outputs - number of hidden layers - maximum number of epochs - learning rate - error tolerance - desired percent
-NeuralNetwork::NeuralNetwork(int n_input_layer, int n_output_layer, int n_hidden_layer_size, int m_epoch, double l_rate, double e_tolerance, double d_percent){
-	input_layer_size = n_input_layer;
-	output_layer_size = n_output_layer;
-	hidden_layer_size = n_hidden_layer_size;
-    max_epoch = m_epoch;
-	learning_rate = l_rate;
-	error_tolerance = e_tolerance;
-    desired_percent = d_percent;
-
-    weight_input.resize(input_layer_size);
-    weight_output.resize(hidden_layer_size);
-}
-
-void NeuralNetwork::trainingDataset(){
-
-    initializeWeight();
+    input_layer_size = input_data[0].size();
+	output_layer_size = output_data[0].size(); 
     
-    for (int epoch = 0; epoch < max_epoch && hit_percent <= desired_percent; epoch++) {
+    max_epoch = user_max_epoch;
+
+    automaticTrainingNeuralNetwork();
+
+}
+
+// entradas - saídas - número de camadas ocultas - maximo número de épocas - taxa de aprendixagem - tolerância de erro - porcentagem de acerto desejada
+NeuralNetwork::NeuralNetwork(vector<vector<double>> input_data, vector<vector<double>> output_data, int user_hidden_layer_size, int user_max_epoch, int user_desired_percent, double user_learning_rate, double user_error_tolerance){
+	input = input_data;
+    output = output_data;
+    
+    input_layer_size = input_data[0].size();
+	output_layer_size = output_data[0].size(); 
+    hidden_layer_size = user_hidden_layer_size;
+    
+    max_epoch = user_max_epoch;
+	learning_rate = user_learning_rate;
+	error_tolerance = user_error_tolerance;
+    desired_percent = user_desired_percent;
+
+    cout << endl << "TRAINING STARTING ..." << endl;
+    initializeWeight();
+    trainingNeuralNetwork();
+}
+
+void NeuralNetwork::trainingNeuralNetwork(){    
+    
+    for (int epoch = 0; epoch < max_epoch && hit_percent < desired_percent; epoch++) {
+        
         for (unsigned int data_row = 0; data_row < input.size(); data_row++){
 
     //FORWARD PROPAGATION
@@ -87,13 +100,18 @@ void NeuralNetwork::trainingDataset(){
             
             hitRate(neural_output, data_row);
         }
-        cout << hit_percent << "\t" << epoch << endl;
-    }    
+        cout << hit_percent << "% \t" << epoch << endl; 
+    }
+    cout << "FINISHED TRAININIG" << endl;
+}
+
+void NeuralNetwork::automaticTrainingNeuralNetwork(){
+
 }
 
 void NeuralNetwork::hitRate(vector<double> neural_output, unsigned int data_row){
     if (data_row == input.size() - 1){
-        hit_percent = (correct_output) / double(output.size() * output_layer_size);
+        hit_percent = (correct_output*100) / (output.size() * output_layer_size);
         correct_output = 0;
     } else {
         for (int i = 0; i < output_layer_size; i++ ){
@@ -104,6 +122,10 @@ void NeuralNetwork::hitRate(vector<double> neural_output, unsigned int data_row)
 }
 
 void NeuralNetwork::initializeWeight(){
+
+    weight_input.resize(input_layer_size);
+    weight_output.resize(hidden_layer_size);
+    
     srand((unsigned int) time(0));
     
     for (unsigned int i = 0; i < weight_input.size(); i++ ){
@@ -131,14 +153,18 @@ double NeuralNetwork::sigmoidPrime(double z){
 
 void NeuralNetwork::setInput(vector<vector<double>> input_data){
     input = input_data;
+    input_layer_size = input_data[0].size();
 }
 
 void NeuralNetwork::setOutput(vector<vector<double>> output_data){
-    output = output_data;    
+    output = output_data;
+	output_layer_size = output_data[0].size();    
 }
 
 
 void NeuralNetwork::testingDataset(vector<vector<double>> input_test){
+
+    cout << endl << "TESTING NEURAL NETWORK" << endl;
     for (unsigned int data_row = 0; data_row < input_test.size(); data_row++){
     
     //FORWARD PROPAGATION
