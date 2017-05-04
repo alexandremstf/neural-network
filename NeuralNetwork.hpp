@@ -15,16 +15,16 @@ private:
 	vector<vector<double>> weight_input;
 	vector<vector<double>> weight_output;
 
-	int correct_output;
-	int hit_percent;
-
 	int max_epoch;
+	int correct_output;
+	double hit_percent;
+	double desired_percent;
 	double learning_rate;
 	double error_tolerance;
 		
 public:
 	NeuralNetwork(int, int);
-	NeuralNetwork(int, int, int, int, double, double);
+	NeuralNetwork(int, int, int, int, double, double, double);
 
 
 	void trainingDataset();

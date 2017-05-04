@@ -4,31 +4,33 @@ NeuralNetwork::NeuralNetwork(int n_input_layer, int n_output_layer){
 	//Automatic
 }
 
-// number of inputs - number of outputs - number of hidden layers - maximum number of epochs - learning rate - error tolerance
-NeuralNetwork::NeuralNetwork(int n_input_layer, int n_output_layer, int n_hidden_layer_size, int m_epoch, double l_rate, double e_tolerance){
+// number of inputs - number of outputs - number of hidden layers - maximum number of epochs - learning rate - error tolerance - desired percent
+NeuralNetwork::NeuralNetwork(int n_input_layer, int n_output_layer, int n_hidden_layer_size, int m_epoch, double l_rate, double e_tolerance, double d_percent){
 	input_layer_size = n_input_layer;
 	output_layer_size = n_output_layer;
 	hidden_layer_size = n_hidden_layer_size;
     max_epoch = m_epoch;
 	learning_rate = l_rate;
 	error_tolerance = e_tolerance;
+    desired_percent = d_percent;
 
     weight_input.resize(input_layer_size);
     weight_output.resize(hidden_layer_size);
 }
 
 void NeuralNetwork::trainingDataset(){
+
     initializeWeight();
     
-    for (int epoch = 0; epoch < max_epoch; epoch++) {
-        for (unsigned int row = 0; row < input.size(); row++){
+    for (int epoch = 0; epoch < max_epoch && hit_percent <= desired_percent; epoch++) {
+        for (unsigned int data_row = 0; data_row < input.size(); data_row++){
 
     //FORWARD PROPAGATION
         // somatório dos produtos entre, entrada e peso das entradas em cada neurônio da camada oculta
             vector<double> sum_input_weigth(hidden_layer_size, 0.0);
             for (int i = 0; i < hidden_layer_size; i++ ){
                 for (int j = 0; j < input_layer_size; j++ ){
-                    sum_input_weigth[i] += input[row][j] * weight_input[j][i];
+                    sum_input_weigth[i] += input[data_row][j] * weight_input[j][i];
                 }
             }
 
@@ -57,7 +59,7 @@ void NeuralNetwork::trainingDataset(){
         // erro entre a saída esperada e a calculada, multiplicado pela taxa de mudança da função de ativação no somatório de saída (derivada)
             vector<double> delta_output_sum;
             for (int i = 0; i < output_layer_size; i++ ){
-                delta_output_sum.push_back((output[row][i] - neural_output[i]) * sigmoidPrime(sum_output_weigth[i]));
+                delta_output_sum.push_back((output[data_row][i] - neural_output[i]) * sigmoidPrime(sum_output_weigth[i]));
             }
 
         // relação dos erros das saídas com a saída, multiplicado pela taxa de mudança da função de ativação no somatório da camada oculta (derivada)
@@ -79,25 +81,24 @@ void NeuralNetwork::trainingDataset(){
         // corrigindo os valores dos pesos de entrada
             for (unsigned int i = 0; i < weight_input.size(); i++){
                 for (unsigned int j = 0; j < weight_input[i].size(); j++){
-                    weight_input[i][j] += delta_input_sum[j] * input[row][i] * learning_rate;
+                    weight_input[i][j] += delta_input_sum[j] * input[data_row][i] * learning_rate;
                 }        
             }
             
-            hitRate(neural_output, row);
+            hitRate(neural_output, data_row);
         }
         cout << hit_percent << "\t" << epoch << endl;
     }    
 }
 
-void NeuralNetwork::hitRate(vector<double> neural_output, unsigned int row){
-    if (row == input.size() - 1){
-        hit_percent = (correct_output * 100) / (output.size() * output_layer_size);
+void NeuralNetwork::hitRate(vector<double> neural_output, unsigned int data_row){
+    if (data_row == input.size() - 1){
+        hit_percent = (correct_output) / double(output.size() * output_layer_size);
         correct_output = 0;
     } else {
         for (int i = 0; i < output_layer_size; i++ ){
-            if (neural_output[i] - output[row][i] < error_tolerance){
+            if (neural_output[i] - output[data_row][i] < error_tolerance)
                 correct_output++;
-            }
         }
     }
 }
@@ -116,6 +117,7 @@ void NeuralNetwork::initializeWeight(){
             weight_output[i].push_back(((double) rand() / (RAND_MAX)));
         }
     }
+    hit_percent = 0;
     correct_output = 0;
 }
 
@@ -137,14 +139,14 @@ void NeuralNetwork::setOutput(vector<vector<double>> output_data){
 
 
 void NeuralNetwork::testingDataset(vector<vector<double>> input_test){
-    for (unsigned int row = 0; row < input_test.size(); row++){
+    for (unsigned int data_row = 0; data_row < input_test.size(); data_row++){
     
     //FORWARD PROPAGATION
     // somatório dos produtos entre, entrada e peso das entradas em cada neurônio da camada oculta
         vector<double> sum_input_weigth(hidden_layer_size, 0.0);
         for (int i = 0; i < hidden_layer_size; i++ ){
             for (int j = 0; j < input_layer_size; j++ ){
-                sum_input_weigth[i] += input_test[row][j] * weight_input[j][i];
+                sum_input_weigth[i] += input_test[data_row][j] * weight_input[j][i];
             }
         }
 
