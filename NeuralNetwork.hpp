@@ -6,12 +6,18 @@
 class NeuralNetwork {
 
 struct network {
-  int epoch = 0;
-  int hidden_layer = 0;
-  double learning_rate = 0;
+	int epoch = 0;
+	int hidden_layer = 0;
+	double learning_rate = 0;
+	vector<vector<double>> weight_input;
+	vector<vector<double>> weight_output;
 } ;
 
 private:
+
+vector<vector<double>> neural_test;
+
+
 	int input_layer_size;
 	int output_layer_size;
 	int hidden_layer_size;
@@ -24,23 +30,25 @@ private:
 	network best_network;
 
 	int epoch;
+	int max_epoch;
+
 	int correct_output;
 	int hit_percent;
 
-	int max_epoch;
 	double desired_percent;
 	double learning_rate;
 	double error_tolerance;
 		
 public:
 	NeuralNetwork();
-	NeuralNetwork(vector<vector<double>>, vector<vector<double>>, int, int, double, double = 1, int = 1);
+	NeuralNetwork(vector<vector<double>>, vector<vector<double>>);
 
 	void trainingNeuralNetwork();
-	void automaticTrainingNeuralNetwork(int, double);
-	void testingDataset(vector<vector<double>>);
+	void autoTrainingNeuralNetwork(int, double);
 	void initializeWeight();
-	void hitRate(vector<double>, unsigned int);
+	void hitPercent(vector<double>, unsigned int);
+	
+	vector<vector<double>> runNeuralNetwork(vector<vector<double>>);
 
 	double sigmoid(double);	
 	double sigmoidPrime(double);
@@ -52,7 +60,7 @@ public:
 	void setHiddenLayerSize(int);
 	void setLearningRate(double);
 	void setErrorTolerance(double);
-
+	void setTrainingParameter(int, int, double, double = 1, int = 1);
 };
 
 #endif

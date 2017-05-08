@@ -3,11 +3,14 @@
 NeuralNetwork::NeuralNetwork(){
 }
 
-// entradas - saídas - número de camadas ocultas - maximo número de épocas - taxa de aprendixagem - tolerância de erro - porcentagem de acerto desejada
-NeuralNetwork::NeuralNetwork(vector<vector<double>> user_input, vector<vector<double>> user_output, int user_max_epoch, int user_desired_percent, double user_error_tolerance, double user_learning_rate, int user_hidden_layer_size ){
-	
+NeuralNetwork::NeuralNetwork(vector<vector<double>> user_input, vector<vector<double>> user_output){
+   
     setInput(user_input);
     setOutput(user_output);
+}
+
+void NeuralNetwork::setTrainingParameter( int user_max_epoch, int user_desired_percent, double user_error_tolerance, double user_learning_rate, int user_hidden_layer_size){
+
     setMaxEpoch(user_max_epoch);
 	setLearningRate(user_learning_rate);
     setErrorTolerance(user_error_tolerance);
@@ -53,6 +56,11 @@ void NeuralNetwork::trainingNeuralNetwork(){
                 neural_output.push_back(sigmoid(sum_output_weigth[i]));
             }
 
+            hitPercent(neural_output, data_row);            
+            if (hit_percent >= desired_percent){
+                break;
+            }
+
 
     //BACK PROPAGATION
         // erro entre a saída esperada e a calculada, multiplicado pela taxa de mudança da função de ativação no somatório de saída (derivada)
@@ -83,34 +91,43 @@ void NeuralNetwork::trainingNeuralNetwork(){
                     weight_input[i][j] += delta_input_sum[j] * input[data_row][i] * learning_rate;
                 }        
             }
-            
-            hitRate(neural_output, data_row);
         }
     }
-    cout << hidden_layer_size << "\t" << learning_rate << "\t" << hit_percent << "% \t" << epoch << endl; 
+
+    cout << hidden_layer_size << "\t" << learning_rate << "\t" << hit_percent << "% \t" << epoch << endl;
 }
 
-void NeuralNetwork::automaticTrainingNeuralNetwork(int hidden_layer_limit, double learning_rate_increase){
+void NeuralNetwork::autoTrainingNeuralNetwork(int hidden_layer_limit, double learning_rate_increase){
 
     for (hidden_layer_size = 1; hidden_layer_size <= hidden_layer_limit; hidden_layer_size++){
-        for (learning_rate = learning_rate_increase; learning_rate < 1; learning_rate = learning_rate + learning_rate_increase){
+        for (learning_rate = learning_rate_increase; learning_rate <= 1; learning_rate = learning_rate + learning_rate_increase){
             initializeWeight();
             trainingNeuralNetwork();
             if (epoch < best_network.epoch){
                 best_network.epoch = epoch;
                 best_network.learning_rate = learning_rate;
                 best_network.hidden_layer = hidden_layer_size;
+                best_network.weight_input = weight_input;
+	            best_network.weight_output = weight_output;
             }
         }
     }
 
-    cout << "Best Network" << endl << best_network.hidden_layer << "\t" << best_network.learning_rate << "\t" << best_network.epoch << endl;
+    cout << "Best Network: " << best_network.hidden_layer << "\t" << best_network.learning_rate << "\t" << best_network.epoch << endl;
+    
+    epoch = best_network.epoch;
+    learning_rate = best_network.learning_rate;
+    hidden_layer_size = best_network.hidden_layer;
+    weight_input = best_network.weight_input;
+    weight_output = best_network.weight_output;
+
 }
 
-void NeuralNetwork::hitRate(vector<double> neural_output, unsigned int data_row){
+void NeuralNetwork::hitPercent(vector<double> neural_output, unsigned int data_row){
    
-    if (data_row == input.size() - 1){
+    if (data_row == input.size()-1){
         hit_percent = (correct_output*100) / (output.size() * output_layer_size);
+        cout << correct_output << endl;
         correct_output = 0;
     } else {
         for (int i = 0; i < output_layer_size; i++ ){
@@ -140,6 +157,7 @@ void NeuralNetwork::initializeWeight(){
             weight_output[i].push_back(((double) rand() / (RAND_MAX)));
         }
     }
+
     hit_percent = 0;
     correct_output = 0;
 }
@@ -182,25 +200,21 @@ void NeuralNetwork::setOutput(vector<vector<double>> o){
 	output_layer_size = o[0].size();    
 }
 
-void NeuralNetwork::testingDataset(vector<vector<double>> input_test){
+vector<vector<double>> NeuralNetwork::runNeuralNetwork(vector<vector<double>> input_run){
 
-    epoch = best_network.epoch;
-    learning_rate = best_network.learning_rate;
-    hidden_layer_size = best_network.hidden_layer;
-    initializeWeight();
-    trainingNeuralNetwork();
+    vector<vector<double>> result_network;
+    int test = 0;
 
-    cout << endl << "TESTING NEURAL NETWORK" << endl;
-    for (unsigned int data_row = 0; data_row < input_test.size(); data_row++){
-    
-    //FORWARD PROPAGATION
+    for (unsigned int data_row = 0; data_row < input.size(); data_row++){
+        
+//FORWARD PROPAGATION
     // somatório dos produtos entre, entrada e peso das entradas em cada neurônio da camada oculta
         vector<double> sum_input_weigth(hidden_layer_size, 0.0);
         for (int i = 0; i < hidden_layer_size; i++ ){
             for (int j = 0; j < input_layer_size; j++ ){
-                sum_input_weigth[i] += input_test[data_row][j] * weight_input[j][i];
+                sum_input_weigth[i] += input[data_row][j] * weight_input[j][i];
             }
-        }
+        }            
 
     // aplica função de ativação, em cada somatório encontrado, ou em cada neurônio da camada oculta  (sigmoid)
         vector<double> neural_input;
@@ -220,9 +234,18 @@ void NeuralNetwork::testingDataset(vector<vector<double>> input_test){
         vector<double> neural_output;
         for (int i = 0; i < output_layer_size; i++ ){
             neural_output.push_back(sigmoid(sum_output_weigth[i]));
+
+        if (neural_output[i] - output[data_row][i] < error_tolerance)
+            test++;
         }
 
-        Struct::printVector(neural_output);
-    }       
-    cout << endl;
+        result_network.push_back(neural_output);
+
+    }
+
+    cout << test << endl;
+
+    //cout << "Result: " << hidden_layer_size << "\t" << learning_rate << "\t" << hit_percent << "% \t" << endl;
+
+    return result_network;
 }
