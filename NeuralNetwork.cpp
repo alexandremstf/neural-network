@@ -31,11 +31,28 @@ void NeuralNetwork::trainingNeuralNetwork(){
             vector<double> output_line = output[data_row];
 
             ForwardPropagation forward = forwardPropagation(input_line);
-            backPropagation(forward, input_line, output_line);
+            hitPercent(forward.output, data_row);
+
+            if (hit_percent < desired_percent)
+                backPropagation(forward, input_line, output_line);
         }
     }
 
     cout << hidden_layer_size << "\t" << learning_rate << "\t" << hit_percent << "% \t" << epoch << endl;
+
+            for (unsigned int data_row = 0; data_row < input.size(); data_row++){
+
+            vector<double> input_line = input[data_row];
+            vector<double> output_line = output[data_row];
+
+            ForwardPropagation forward = forwardPropagation(input_line);
+            hitPercent(forward.output, data_row);
+
+            }
+
+    cout << hidden_layer_size << "\t" << learning_rate << "\t" << hit_percent << "% \t" << endl;
+    
+
 }
 
 NeuralNetwork::ForwardPropagation NeuralNetwork::forwardPropagation(vector<double> input_line){
@@ -129,10 +146,8 @@ void NeuralNetwork::autoTrainingNeuralNetwork(int hidden_layer_limit, double lea
 }
 
 void NeuralNetwork::hitPercent(vector<double> neural_output, unsigned int data_row){
-   
     if (data_row == input.size()-1){
         hit_percent = (correct_output*100) / (output.size() * output_layer_size);
-        cout << correct_output << endl;
         correct_output = 0;
     } else {
         for (int i = 0; i < output_layer_size; i++ ){
