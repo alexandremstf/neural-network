@@ -12,12 +12,7 @@ int main(){
 	
 		neural_network.setTrainingParameter(1000, 94, 0.05, 1, 6);
 		neural_network.trainingNeuralNetwork();
-		vector<vector<double>> result = neural_network.runNeuralNetwork(input);
-	/*
-		neural_network.setTrainingParameter(1000, 90, 0.05);
-		neural_network.autoTrainingNeuralNetwork(5, 0.25);
-		vector<vector<double>> result = neural_network.runNeuralNetwork(input);
-	*/
+
 }
 
 // g++ main.cpp NeuralNetwork.cpp Data.cpp Structs.cpp -o machineLearnig -std=c++11 -Wall -g

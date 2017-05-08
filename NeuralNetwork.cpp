@@ -21,80 +21,85 @@ void NeuralNetwork::setTrainingParameter( int user_max_epoch, int user_desired_p
     initializeWeight();
 }
 
-void NeuralNetwork::trainingNeuralNetwork(){    
+void NeuralNetwork::trainingNeuralNetwork(){
     
     for (epoch = 0; epoch < max_epoch && hit_percent < desired_percent; epoch++) {
         
         for (unsigned int data_row = 0; data_row < input.size(); data_row++){
 
-    //FORWARD PROPAGATION
-        // somatório dos produtos entre, entrada e peso das entradas em cada neurônio da camada oculta
-            vector<double> sum_input_weigth(hidden_layer_size, 0.0);
-            for (int i = 0; i < hidden_layer_size; i++ ){
-                for (int j = 0; j < input_layer_size; j++ ){
-                    sum_input_weigth[i] += input[data_row][j] * weight_input[j][i];
-                }
-            }
+            vector<double> input_line = input[data_row];
+            vector<double> output_line = output[data_row];
 
-        // aplica função de ativação, em cada somatório encontrado, ou em cada neurônio da camada oculta  (sigmoid)
-            vector<double> neural_input;
-            for (int i = 0; i < hidden_layer_size; i++ ){
-                neural_input.push_back(sigmoid(sum_input_weigth[i]));
-            }
-
-        // somatório dos produtos entre, o somatório dos neurônios na camada oculta e o peso das saídas
-            vector<double> sum_output_weigth(output_layer_size, 0.0);
-            for (int i = 0; i < output_layer_size; i++ ){
-                for (int j = 0; j < hidden_layer_size; j++ ){
-                    sum_output_weigth[i] += neural_input[j] * weight_output[j][i];
-                }
-            }
-
-        // aplica função de ativação em cada somatório encontrado, ou em cada nerônio da camada de saída (sigmoidPrime), saída da rede neural
-            vector<double> neural_output;
-            for (int i = 0; i < output_layer_size; i++ ){
-                neural_output.push_back(sigmoid(sum_output_weigth[i]));
-            }
-
-            hitPercent(neural_output, data_row);            
-            if (hit_percent >= desired_percent){
-                break;
-            }
-
-
-    //BACK PROPAGATION
-        // erro entre a saída esperada e a calculada, multiplicado pela taxa de mudança da função de ativação no somatório de saída (derivada)
-            vector<double> delta_output_sum;
-            for (int i = 0; i < output_layer_size; i++ ){
-                delta_output_sum.push_back((output[data_row][i] - neural_output[i]) * sigmoidPrime(sum_output_weigth[i]));
-            }
-
-        // relação dos erros das saídas com a saída, multiplicado pela taxa de mudança da função de ativação no somatório da camada oculta (derivada)
-            vector<double> delta_input_sum(hidden_layer_size, 0.0);
-            for (int i = 0; i < hidden_layer_size; i++ ){
-                for (int j = 0; j < output_layer_size; j++ ){
-                    delta_input_sum[i] += delta_output_sum[j] * weight_output[i][j];
-                }
-                delta_input_sum[i] *= sigmoidPrime(sum_input_weigth[i]);
-            }
-
-        // corrigindo os valores dos pesos de saída
-            for (unsigned int i = 0; i < weight_output.size(); i++){
-                for (unsigned int j = 0; j < weight_output[i].size(); j++){
-                    weight_output[i][j] += delta_output_sum[j] * neural_input[i] * learning_rate;
-                }        
-            }
-        
-        // corrigindo os valores dos pesos de entrada
-            for (unsigned int i = 0; i < weight_input.size(); i++){
-                for (unsigned int j = 0; j < weight_input[i].size(); j++){
-                    weight_input[i][j] += delta_input_sum[j] * input[data_row][i] * learning_rate;
-                }        
-            }
+            ForwardPropagation forward = forwardPropagation(input_line);
+            backPropagation(forward, input_line, output_line);
         }
     }
 
     cout << hidden_layer_size << "\t" << learning_rate << "\t" << hit_percent << "% \t" << epoch << endl;
+}
+
+NeuralNetwork::ForwardPropagation NeuralNetwork::forwardPropagation(vector<double> input_line){
+
+ForwardPropagation forward(hidden_layer_size, output_layer_size);
+
+// somatório dos produtos entre, entrada e peso das entradas em cada neurônio da camada oculta
+    for (int i = 0; i < hidden_layer_size; i++ ){
+        for (int j = 0; j < input_layer_size; j++ ){
+            forward.sum_input_weight[i] += input_line[j] * weight_input[j][i];
+        }
+    }
+
+// aplica função de ativação, em cada somatório encontrado, ou em cada neurônio da camada oculta  (sigmoid)
+    for (int i = 0; i < hidden_layer_size; i++ ){
+        forward.sum_input_weight_ativation.push_back(sigmoid(forward.sum_input_weight[i]));
+    }
+
+// somatório dos produtos entre, o somatório dos neurônios na camada oculta e o peso das saídas
+    for (int i = 0; i < output_layer_size; i++ ){
+        for (int j = 0; j < hidden_layer_size; j++ ){
+            forward.sum_output_weigth[i] += forward.sum_input_weight_ativation[j] * weight_output[j][i];
+        }
+    }
+
+// aplica função de ativação em cada somatório encontrado, ou em cada nerônio da camada de saída (sigmoidPrime), saída da rede neural
+    for (int i = 0; i < output_layer_size; i++ ){
+        forward.output.push_back(sigmoid(forward.sum_output_weigth[i]));
+    }
+
+    return forward;
+}
+
+void NeuralNetwork::backPropagation(ForwardPropagation forward, vector<double> input_line, vector<double> output_line){
+    
+BackPropagation back(hidden_layer_size);
+
+// erro entre a saída esperada e a calculada, multiplicado pela taxa de mudança da função de ativação no somatório de saída (derivada)
+    for (int i = 0; i < output_layer_size; i++ ){
+        back.delta_output_sum.push_back((output_line[i] - forward.output[i]) * sigmoidPrime(forward.sum_output_weigth[i]));
+    }
+
+// relação dos erros das saídas com a saída, multiplicado pela taxa de mudança da função de ativação no somatório da camada oculta (derivada)
+    for (int i = 0; i < hidden_layer_size; i++ ){
+        for (int j = 0; j < output_layer_size; j++ ){
+            back.delta_input_sum[i] += back.delta_output_sum[j] * weight_output[i][j];
+        }
+        back.delta_input_sum[i] *= sigmoidPrime(forward.sum_input_weight[i]);
+    }
+
+// corrigindo os valores dos pesos de saída
+    for (unsigned int i = 0; i < weight_output.size(); i++){
+        for (unsigned int j = 0; j < weight_output[i].size(); j++){
+            weight_output[i][j] += back.delta_output_sum[j] * forward.sum_input_weight_ativation[i] * learning_rate;
+        }        
+    }
+
+// corrigindo os valores dos pesos de entrada
+    for (unsigned int i = 0; i < weight_input.size(); i++){
+        for (unsigned int j = 0; j < weight_input[i].size(); j++){
+            weight_input[i][j] += back.delta_input_sum[j] * input_line[i] * learning_rate;
+        }        
+    }
+
 }
 
 void NeuralNetwork::autoTrainingNeuralNetwork(int hidden_layer_limit, double learning_rate_increase){
@@ -198,54 +203,4 @@ void NeuralNetwork::setInput(vector<vector<double>> i){
 void NeuralNetwork::setOutput(vector<vector<double>> o){
     output = o;
 	output_layer_size = o[0].size();    
-}
-
-vector<vector<double>> NeuralNetwork::runNeuralNetwork(vector<vector<double>> input_run){
-
-    vector<vector<double>> result_network;
-    int test = 0;
-
-    for (unsigned int data_row = 0; data_row < input.size(); data_row++){
-        
-//FORWARD PROPAGATION
-    // somatório dos produtos entre, entrada e peso das entradas em cada neurônio da camada oculta
-        vector<double> sum_input_weigth(hidden_layer_size, 0.0);
-        for (int i = 0; i < hidden_layer_size; i++ ){
-            for (int j = 0; j < input_layer_size; j++ ){
-                sum_input_weigth[i] += input[data_row][j] * weight_input[j][i];
-            }
-        }            
-
-    // aplica função de ativação, em cada somatório encontrado, ou em cada neurônio da camada oculta  (sigmoid)
-        vector<double> neural_input;
-        for (int i = 0; i < hidden_layer_size; i++ ){
-            neural_input.push_back(sigmoid(sum_input_weigth[i]));
-        }
-
-    // somatório dos produtos entre, o somatório dos neurônios na camada oculta e o peso das saídas
-        vector<double> sum_output_weigth(output_layer_size, 0.0);
-        for (int i = 0; i < output_layer_size; i++ ){
-            for (int j = 0; j < hidden_layer_size; j++ ){
-                sum_output_weigth[i] += neural_input[j] * weight_output[j][i];
-            }
-        }
-
-    // aplica função de ativação em cada somatório encontrado, ou em cada nerônio da camada de saída (sigmoidPrime), saída da rede neural
-        vector<double> neural_output;
-        for (int i = 0; i < output_layer_size; i++ ){
-            neural_output.push_back(sigmoid(sum_output_weigth[i]));
-
-        if (neural_output[i] - output[data_row][i] < error_tolerance)
-            test++;
-        }
-
-        result_network.push_back(neural_output);
-
-    }
-
-    cout << test << endl;
-
-    //cout << "Result: " << hidden_layer_size << "\t" << learning_rate << "\t" << hit_percent << "% \t" << endl;
-
-    return result_network;
 }

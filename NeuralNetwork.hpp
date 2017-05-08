@@ -5,6 +5,33 @@
 
 class NeuralNetwork {
 
+struct ForwardPropagation {
+	vector<double> sum_input_weight;
+	vector<double> sum_output_weigth;
+	vector<double> sum_input_weight_ativation;
+	vector<double> output;
+
+	ForwardPropagation(){}
+	ForwardPropagation(int size_input, int size_output) { 
+		sum_input_weight.resize(size_input);
+	    sum_output_weigth.resize(size_output);
+    	fill(sum_input_weight.begin(), sum_input_weight.end(), 0);
+		fill(sum_output_weigth.begin(), sum_output_weigth.end(), 0);
+    }
+	
+}; 
+
+struct BackPropagation {
+	vector<double> delta_output_sum;
+	vector<double> delta_input_sum;
+
+	BackPropagation(){}
+	BackPropagation(int size_input) { 
+		delta_input_sum.resize(size_input);
+    	fill(delta_input_sum.begin(), delta_input_sum.end(), 0);
+    }
+}; 
+
 struct network {
 	int epoch = 0;
 	int hidden_layer = 0;
@@ -14,10 +41,6 @@ struct network {
 } ;
 
 private:
-
-vector<vector<double>> neural_test;
-
-
 	int input_layer_size;
 	int output_layer_size;
 	int hidden_layer_size;
@@ -26,6 +49,7 @@ vector<vector<double>> neural_test;
 	vector<vector<double>> output;
 	vector<vector<double>> weight_input;
 	vector<vector<double>> weight_output;
+
 
 	network best_network;
 
@@ -47,8 +71,9 @@ public:
 	void autoTrainingNeuralNetwork(int, double);
 	void initializeWeight();
 	void hitPercent(vector<double>, unsigned int);
-	
-	vector<vector<double>> runNeuralNetwork(vector<vector<double>>);
+
+	ForwardPropagation forwardPropagation(vector<double>);
+	void backPropagation(ForwardPropagation, vector<double>, vector<double>);
 
 	double sigmoid(double);	
 	double sigmoidPrime(double);
