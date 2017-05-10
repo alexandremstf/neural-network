@@ -30,7 +30,7 @@ struct BackPropagation {
 		delta_input_sum.resize(size_input);
     	fill(delta_input_sum.begin(), delta_input_sum.end(), 0);
     }
-}; 
+};
 
 struct network {
 	int epoch = 0;
@@ -50,7 +50,6 @@ private:
 	vector<vector<double>> weight_input;
 	vector<vector<double>> weight_output;
 
-
 	network best_network;
 
 	int epoch;
@@ -62,15 +61,18 @@ private:
 	double desired_percent;
 	double learning_rate;
 	double error_tolerance;
-		
+
 public:
 	NeuralNetwork();
 	NeuralNetwork(vector<vector<double>>, vector<vector<double>>);
 
-	void trainingNeuralNetwork();
-	void autoTrainingNeuralNetwork(int, double);
+	void run();
+
+	void training();
+	void autoTraining(int, double);
 	void initializeWeight();
-	void hitPercent(vector<double>, unsigned int);
+	void hitRateCount(vector<double>, unsigned int);
+	void hitRateCalculate();
 
 	ForwardPropagation forwardPropagation(vector<double>);
 	void backPropagation(ForwardPropagation, vector<double>, vector<double>);
@@ -85,7 +87,7 @@ public:
 	void setHiddenLayerSize(int);
 	void setLearningRate(double);
 	void setErrorTolerance(double);
-	void setTrainingParameter(int, int, double, double = 1, int = 1);
+	void setParameter(int, int, double, double = 1, int = 1);
 };
 
 #endif

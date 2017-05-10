@@ -9,10 +9,9 @@ int main(){
 	vector<vector<double>> output = data_learning.getOutput();
 
 	NeuralNetwork neural_network(input, output);
-	
-		neural_network.setTrainingParameter(1000, 94, 0.05, 1, 6);
-		neural_network.trainingNeuralNetwork();
-
+		neural_network.setParameter(1000, 94, 0.05, 0.8, 6);
+		neural_network.training();
+		neural_network.run();
 }
 
 // g++ main.cpp NeuralNetwork.cpp Data.cpp Structs.cpp -o machineLearnig -std=c++11 -Wall -g
