@@ -4,18 +4,19 @@ This library was developed using STL, to create neural networks in c ++ with few
 ```c++
 //MANUAL
 
-#include "NeuralNetwork.hpp"
+#include "include/Network.hpp"
+#include "include/Dataset.hpp"
 
 int main(){
 
-	Data data_learning;
+	Neural::Dataset data_learning;
 		data_learning.loadInputOutputData(4, 3, "database/iris.txt");
 
 	vector<vector<double>> input = data_learning.getInput();
 	vector<vector<double>> output = data_learning.getOutput();
-	
-	NeuralNetwork neural_network(input, output);
-		neural_network.setParameter(1000, 94, 0.05, 0.8, 6);
+
+	Neural::Network neural_network(input, output);
+		neural_network.setParameter(1000, 90, 0.05, 0.8, 6);
 		neural_network.training();
 		neural_network.run();
 }
@@ -24,19 +25,20 @@ int main(){
 ```c++
 //AUTOMATIC
 
-#include "NeuralNetwork.hpp"
+#include "include/Network.hpp"
+#include "include/Dataset.hpp"
 
 int main(){
 
-	Data data_learning;
+	Neural::Dataset data_learning;
 		data_learning.loadInputOutputData(4, 3, "database/iris.txt");
 
 	vector<vector<double>> input = data_learning.getInput();
 	vector<vector<double>> output = data_learning.getOutput();
-	
-	NeuralNetwork neural_network(input, output);
-		neural_network.setParameter(1000, 94, 0.05);
-		neural_network.autoTraining(20, 0.1);
+
+	Neural::Network neural_network(input, output);
+		neural_network.setParameter(1000, 90, 0.05);
+		neural_network.autoTraining(20, 0.2);
 		neural_network.run();
 }
 ```
