@@ -1,9 +1,9 @@
 # Neural Network C++
-This Library was developed using STL, to create neural networks in c++ with few lines of code. There are two modes to create a neural network in this library, manual end automatic, see examples bellow:
-
-Manual:
+This Library was developed using STL, to create neural networks in c++ with few lines of code. There are two modes to create a neural network in this library, manual and automatic, see the examples bellow:
 
 ```c++
+//MANUAL
+
 #include "NeuralNetwork.hpp"
 
 int main(){
