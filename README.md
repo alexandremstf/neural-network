@@ -1,5 +1,7 @@
 # Neural Network C++
-This library was developed using STL, to create neural networks in c ++ with few lines of code. It is a project of scientific initiation of the Federal University of Ouro Preto. There are two ways to create a neural network in this library, both manual and automatic, see the examples below:
+This library was developed using STL, to create neural networks in c ++ with few lines of code. It is a project of scientific initiation of the Federal University of Ouro Preto, that uses as learning base the backpropagation algorithm. With this library, people with little knowledge about neural networks can implement them. There are two ways to create a neural network in this library, either manually or automatically, see the examples below:
+
+Esta biblioteca foi desenvolvida usando STL, para criar redes neurais em c + + com poucas linhas de código. É um projeto de iniciação científica da Universidade Federal de Ouro Preto, que utiliza como base de aprendizado o algoritmo de backpropagation. Com esta biblioteca pessoas com pouco conhecimento sobre redes neurais podem as implementar. Existem duas maneiras de criar uma rede neural nesta biblioteca, manual ou automática, veja os exemplos abaixo:
 
 ```c++
 //MANUAL
