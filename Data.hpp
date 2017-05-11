@@ -1,7 +1,12 @@
 #ifndef DATA_HPP_
 #define DATA_HPP_
 
-#include "Header.hpp"
+#include <iostream>
+#include <vector>
+#include <fstream>
+#include <algorithm>
+
+using namespace std;
 
 class Data {
 

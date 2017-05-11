@@ -1,4 +1,5 @@
-#include "Header.hpp"
+#include "NeuralNetwork.hpp"
+#include "Data.hpp"
 
 int main(){
 
@@ -9,10 +10,10 @@ int main(){
 	vector<vector<double>> output = data_learning.getOutput();
 
 	NeuralNetwork neural_network(input, output);
-		neural_network.setParameter(1000, 94, 0.05, 0.8, 6);
-		//neural_network.training();
-		neural_network.autoTraining(20, 0.2);
+		neural_network.setParameter(1000, 90, 0.05, 0.8, 6);
+		neural_network.training();
+//neural_network.autoTraining(20, 0.2);
 		neural_network.run();
 }
 
-// g++ main.cpp NeuralNetwork.cpp Data.cpp Structs.cpp -o machineLearnig -std=c++11 -Wall -g
+// g++ main.cpp NeuralNetwork.cpp Data.cpp -o machineLearnig -std=c++11 -Wall -g

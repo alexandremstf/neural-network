@@ -1,7 +1,11 @@
 #ifndef NEURALNETWORK_HPP_
 #define NEURALNETWORK_HPP_
 
-#include "Header.hpp"
+#include <iostream>
+#include <math.h>
+#include <vector>
+
+using namespace std;
 
 class NeuralNetwork {
 
@@ -18,7 +22,6 @@ struct ForwardPropagation {
     	fill(sum_input_weight.begin(), sum_input_weight.end(), 0);
 		fill(sum_output_weigth.begin(), sum_output_weigth.end(), 0);
     }
-	
 }; 
 
 struct BackPropagation {
@@ -29,6 +32,27 @@ struct BackPropagation {
 	BackPropagation(int size_input) { 
 		delta_input_sum.resize(size_input);
     	fill(delta_input_sum.begin(), delta_input_sum.end(), 0);
+    }
+};
+
+struct print{
+	void matrix(vector<vector<double>> v){
+		for (unsigned int i = 0; i < v.size(); i++){
+			for (unsigned int j = 0; j < v[i].size(); j++){
+				//cout << round(v[i][j]) << "\t";
+				cout << (v[i][j]) << "\t";
+			}
+			cout << endl;
+		}
+		cout << endl;
+	}
+
+	void vector(vector<double> v){
+        for (unsigned int i = 0; i < v.size(); i++){
+            //cout << round(v[i]) << "\t";
+            cout << (v[i]) << "\t";
+        }
+        cout << endl;
     }
 };
 
@@ -49,7 +73,7 @@ private:
 	vector<vector<double>> output;
 	vector<vector<double>> weight_input;
 	vector<vector<double>> weight_output;
-
+	
 	network best_network;
 
 	int epoch;

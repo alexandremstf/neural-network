@@ -35,12 +35,9 @@ void NeuralNetwork::training(){
     for (epoch = 0; epoch < max_epoch && hit_percent < desired_percent; epoch++) {
         
         for (unsigned int data_row = 0; data_row < input.size(); data_row++){
-
-            vector<double> input_line = input[data_row];
-            vector<double> output_line = output[data_row];
-
-            ForwardPropagation forward = forwardPropagation(input_line);
-            backPropagation(forward, input_line, output_line);
+            
+            ForwardPropagation forward = forwardPropagation(input[data_row]);
+            backPropagation(forward, input[data_row], output[data_row]);
         }
 
         run();
