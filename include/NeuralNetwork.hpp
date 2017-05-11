@@ -7,6 +7,8 @@
 
 using namespace std;
 
+namespace neural {
+
 class NeuralNetwork {
 
 struct ForwardPropagation {
@@ -113,5 +115,7 @@ public:
 	void setErrorTolerance(double);
 	void setParameter(int, int, double, double = 1, int = 1);
 };
+
+}
 
 #endif

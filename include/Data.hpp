@@ -8,6 +8,8 @@
 
 using namespace std;
 
+namespace neural{
+
 class Data {
 
 private:
@@ -29,5 +31,7 @@ public:
     vector<vector<double>> getInput();
     vector<vector<double>> getOutput();
 };
+
+}
 
 #endif

@@ -1,4 +1,6 @@
-#include "NeuralNetwork.hpp"
+#include "../include/NeuralNetwork.hpp"
+
+namespace neural{
 
 NeuralNetwork::NeuralNetwork(){
 }
@@ -211,4 +213,6 @@ void NeuralNetwork::setInput(vector<vector<double>> i){
 void NeuralNetwork::setOutput(vector<vector<double>> o){
     output = o;
 	output_layer_size = o[0].size();    
+}
+
 }

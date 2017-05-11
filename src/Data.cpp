@@ -1,4 +1,6 @@
-#include "Data.hpp"
+#include "../include/Data.hpp"
+
+namespace neural {
 
 Data::Data(){
 }
@@ -52,4 +54,6 @@ vector<vector<double>> Data::getInput(){
 
 vector<vector<double>> Data::getOutput(){
     return output_data;
+}
+
 }

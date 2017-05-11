@@ -1,5 +1,7 @@
-#include "NeuralNetwork.hpp"
-#include "Data.hpp"
+#include "include/NeuralNetwork.hpp"
+#include "include/Data.hpp"
+
+using namespace neural;
 
 int main(){
 
@@ -12,7 +14,7 @@ int main(){
 	NeuralNetwork neural_network(input, output);
 		neural_network.setParameter(1000, 90, 0.05, 0.8, 6);
 		neural_network.training();
-//neural_network.autoTraining(20, 0.2);
+		//neural_network.autoTraining(20, 0.2);
 		neural_network.run();
 }
 
