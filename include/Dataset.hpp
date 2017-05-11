@@ -8,9 +8,9 @@
 
 using namespace std;
 
-namespace neural{
+namespace Neural{
 
-class Data {
+class Dataset {
 
 private:
     int n_inputs;
@@ -21,7 +21,7 @@ private:
     vector<vector<double>> output_data;
 
 public:
-	Data();
+	Dataset();
     void saveOutputLog();
     void loadInputOutputData(int, int, string); // load input and output in same file
 

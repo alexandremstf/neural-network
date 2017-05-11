@@ -1,17 +1,17 @@
-#include "../include/NeuralNetwork.hpp"
+#include "../include/Network.hpp"
 
-namespace neural{
+namespace Neural{
 
-NeuralNetwork::NeuralNetwork(){
+Network::Network(){
 }
 
-NeuralNetwork::NeuralNetwork(vector<vector<double>> user_input, vector<vector<double>> user_output){
+Network::Network(vector<vector<double>> user_input, vector<vector<double>> user_output){
    
     setInput(user_input);
     setOutput(user_output);
 }
 
-void NeuralNetwork::setParameter( int user_max_epoch, int user_desired_percent, double user_error_tolerance, double user_learning_rate, int user_hidden_layer_size){
+void Network::setParameter( int user_max_epoch, int user_desired_percent, double user_error_tolerance, double user_learning_rate, int user_hidden_layer_size){
 
     setMaxEpoch(user_max_epoch);
 	setLearningRate(user_learning_rate);
@@ -23,7 +23,7 @@ void NeuralNetwork::setParameter( int user_max_epoch, int user_desired_percent, 
     initializeWeight();
 }
 
-void NeuralNetwork::run(){
+void Network::run(){
 
     for (unsigned int data_row = 0; data_row < input.size(); data_row++){
         ForwardPropagation forward = forwardPropagation(input[data_row]);
@@ -32,7 +32,7 @@ void NeuralNetwork::run(){
     hitRateCalculate();    
 }
 
-void NeuralNetwork::training(){
+void Network::training(){
     
     for (epoch = 0; epoch < max_epoch && hit_percent < desired_percent; epoch++) {
         
@@ -48,7 +48,7 @@ void NeuralNetwork::training(){
     cout << hidden_layer_size << "\t" << learning_rate << "\t" << hit_percent << "% \t" << epoch << endl;
 }
 
-void NeuralNetwork::autoTraining(int hidden_layer_limit, double learning_rate_increase){
+void Network::autoTraining(int hidden_layer_limit, double learning_rate_increase){
 
     for (hidden_layer_size = 1; hidden_layer_size <= hidden_layer_limit; hidden_layer_size++){
         for (learning_rate = learning_rate_increase; learning_rate <= 1; learning_rate = learning_rate + learning_rate_increase){
@@ -74,7 +74,7 @@ void NeuralNetwork::autoTraining(int hidden_layer_limit, double learning_rate_in
 
 }
 
-NeuralNetwork::ForwardPropagation NeuralNetwork::forwardPropagation(vector<double> input_line){
+Network::ForwardPropagation Network::forwardPropagation(vector<double> input_line){
 
     ForwardPropagation forward(hidden_layer_size, output_layer_size);
 
@@ -105,7 +105,7 @@ NeuralNetwork::ForwardPropagation NeuralNetwork::forwardPropagation(vector<doubl
     return forward;
 }
 
-void NeuralNetwork::backPropagation(ForwardPropagation forward, vector<double> input_line, vector<double> output_line){
+void Network::backPropagation(ForwardPropagation forward, vector<double> input_line, vector<double> output_line){
     
     BackPropagation back(hidden_layer_size);
 
@@ -138,7 +138,7 @@ void NeuralNetwork::backPropagation(ForwardPropagation forward, vector<double> i
 
 }
 
-void NeuralNetwork::hitRateCount(vector<double> neural_output, unsigned int data_row){
+void Network::hitRateCount(vector<double> neural_output, unsigned int data_row){
 
     for (int i = 0; i < output_layer_size; i++ ){
         if (neural_output[i] - output[data_row][i] < error_tolerance)
@@ -146,13 +146,13 @@ void NeuralNetwork::hitRateCount(vector<double> neural_output, unsigned int data
     }
 }
 
-void NeuralNetwork::hitRateCalculate(){
+void Network::hitRateCalculate(){
 
     hit_percent = (correct_output*100) / (output.size() * output_layer_size);
     correct_output = 0;
 }
 
-void NeuralNetwork::initializeWeight(){
+void Network::initializeWeight(){
 
     weight_input.resize(input_layer_size);
     weight_output.resize(hidden_layer_size);
@@ -177,40 +177,40 @@ void NeuralNetwork::initializeWeight(){
     correct_output = 0;
 }
 
-double NeuralNetwork::sigmoid(double z){
+double Network::sigmoid(double z){
     return 1/(1+exp(-z));
 }	
 
-double NeuralNetwork::sigmoidPrime(double z){
+double Network::sigmoidPrime(double z){
     return exp(-z) / ( pow(1+exp(-z),2) );
 }
 
-void NeuralNetwork::setMaxEpoch(int m){
+void Network::setMaxEpoch(int m){
     max_epoch = m;
 }
 
-void NeuralNetwork::setDesiredPercent(int d){
+void Network::setDesiredPercent(int d){
     desired_percent = d;
 }
 
-void NeuralNetwork::setHiddenLayerSize(int h){
+void Network::setHiddenLayerSize(int h){
     hidden_layer_size = h;
 }
 
-void NeuralNetwork::setLearningRate(double l){
+void Network::setLearningRate(double l){
     learning_rate = l;
 }
 
-void NeuralNetwork::setErrorTolerance(double e){
+void Network::setErrorTolerance(double e){
     error_tolerance = e;
 }
 
-void NeuralNetwork::setInput(vector<vector<double>> i){
+void Network::setInput(vector<vector<double>> i){
     input = i;
     input_layer_size = i[0].size();
 }
 
-void NeuralNetwork::setOutput(vector<vector<double>> o){
+void Network::setOutput(vector<vector<double>> o){
     output = o;
 	output_layer_size = o[0].size();    
 }

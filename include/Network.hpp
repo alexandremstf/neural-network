@@ -1,5 +1,5 @@
-#ifndef NEURALNETWORK_HPP_
-#define NEURALNETWORK_HPP_
+#ifndef NETWORK_HPP_
+#define NETWORK_HPP_
 
 #include <iostream>
 #include <math.h>
@@ -7,9 +7,9 @@
 
 using namespace std;
 
-namespace neural {
+namespace Neural {
 
-class NeuralNetwork {
+class Network {
 
 struct ForwardPropagation {
 	vector<double> sum_input_weight;
@@ -68,8 +68,8 @@ private:
 	double error_tolerance;
 
 public:
-	NeuralNetwork();
-	NeuralNetwork(vector<vector<double>>, vector<vector<double>>);
+	Network();
+	Network(vector<vector<double>>, vector<vector<double>>);
 
 	void run();
 

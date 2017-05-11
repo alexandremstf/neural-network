@@ -1,14 +1,14 @@
-#include "../include/Data.hpp"
+#include "../include/Dataset.hpp"
 
-namespace neural {
+namespace Neural {
 
-Data::Data(){
+Dataset::Dataset(){
 }
 
-void Data::saveOutputLog(){
+void Dataset::saveOutputLog(){
 }
 
-void Data::printMatrix(vector<vector<double>> v){
+void Dataset::printMatrix(vector<vector<double>> v){
     for (unsigned int i = 0; i < v.size(); i++){
         for (unsigned int j = 0; j < v[i].size(); j++){
             //cout << round(v[i][j]) << "\t";
@@ -19,7 +19,7 @@ void Data::printMatrix(vector<vector<double>> v){
     cout << endl;
 }
 
-void Data::printVector(vector<double> v){
+void Dataset::printVector(vector<double> v){
     for (unsigned int i = 0; i < v.size(); i++){
         //cout << round(v[i]) << "\t";
         cout << (v[i]) << "\t";
@@ -30,7 +30,7 @@ void Data::printVector(vector<double> v){
 /*
  * Load input and output in the same file
  */
-void Data::loadInputOutputData(int n_input, int n_output, string file){
+void Dataset::loadInputOutputData(int n_input, int n_output, string file){
     
     n_inputs = n_input;
     n_outputs = n_output;
@@ -67,11 +67,11 @@ void Data::loadInputOutputData(int n_input, int n_output, string file){
     input.close();
 }
 
-vector<vector<double>> Data::getInput(){
+vector<vector<double>> Dataset::getInput(){
     return input_data;
 }
 
-vector<vector<double>> Data::getOutput(){
+vector<vector<double>> Dataset::getOutput(){
     return output_data;
 }
 
