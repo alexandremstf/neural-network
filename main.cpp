@@ -10,7 +10,8 @@ int main(){
 
 	NeuralNetwork neural_network(input, output);
 		neural_network.setParameter(1000, 94, 0.05, 0.8, 6);
-		neural_network.training();
+		//neural_network.training();
+		neural_network.autoTraining(20, 0.2);
 		neural_network.run();
 }
 

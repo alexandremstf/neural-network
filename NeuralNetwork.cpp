@@ -27,10 +27,7 @@ void NeuralNetwork::run(){
         ForwardPropagation forward = forwardPropagation(input[data_row]);
         hitRateCount(forward.output, data_row);            
     }
-    hitRateCalculate();
-
-    cout << hidden_layer_size << "\t" << learning_rate << "\t" << hit_percent << "% \t" << endl;
-    
+    hitRateCalculate();    
 }
 
 void NeuralNetwork::training(){
@@ -43,31 +40,39 @@ void NeuralNetwork::training(){
             vector<double> output_line = output[data_row];
 
             ForwardPropagation forward = forwardPropagation(input_line);
-            
-            hitRateCount(forward.output, data_row);            
-
-            if (hit_percent < desired_percent)
-                backPropagation(forward, input_line, output_line);
+            backPropagation(forward, input_line, output_line);
         }
 
-        hitRateCalculate();        
+        run();
     }
 
     cout << hidden_layer_size << "\t" << learning_rate << "\t" << hit_percent << "% \t" << epoch << endl;
 }
 
-void NeuralNetwork::hitRateCount(vector<double> neural_output, unsigned int data_row){
+void NeuralNetwork::autoTraining(int hidden_layer_limit, double learning_rate_increase){
 
-    for (int i = 0; i < output_layer_size; i++ ){
-        if (neural_output[i] - output[data_row][i] < error_tolerance)
-            correct_output++;
+    for (hidden_layer_size = 1; hidden_layer_size <= hidden_layer_limit; hidden_layer_size++){
+        for (learning_rate = learning_rate_increase; learning_rate <= 1; learning_rate = learning_rate + learning_rate_increase){
+            initializeWeight();
+            training();
+            if (epoch < best_network.epoch){
+                best_network.epoch = epoch;
+                best_network.learning_rate = learning_rate;
+                best_network.hidden_layer = hidden_layer_size;
+                best_network.weight_input = weight_input;
+	            best_network.weight_output = weight_output;
+            }
+        }
     }
-}
 
-void NeuralNetwork::hitRateCalculate(){
+    cout << "Best Network: " << best_network.hidden_layer << "\t" << best_network.learning_rate << "\t" << best_network.epoch << endl;
+    
+    epoch = best_network.epoch;
+    learning_rate = best_network.learning_rate;
+    hidden_layer_size = best_network.hidden_layer;
+    weight_input = best_network.weight_input;
+    weight_output = best_network.weight_output;
 
-    hit_percent = (correct_output*100) / (output.size() * output_layer_size);
-    correct_output = 0;
 }
 
 NeuralNetwork::ForwardPropagation NeuralNetwork::forwardPropagation(vector<double> input_line){
@@ -134,30 +139,18 @@ void NeuralNetwork::backPropagation(ForwardPropagation forward, vector<double> i
 
 }
 
-void NeuralNetwork::autoTraining(int hidden_layer_limit, double learning_rate_increase){
+void NeuralNetwork::hitRateCount(vector<double> neural_output, unsigned int data_row){
 
-    for (hidden_layer_size = 1; hidden_layer_size <= hidden_layer_limit; hidden_layer_size++){
-        for (learning_rate = learning_rate_increase; learning_rate <= 1; learning_rate = learning_rate + learning_rate_increase){
-            initializeWeight();
-            training();
-            if (epoch < best_network.epoch){
-                best_network.epoch = epoch;
-                best_network.learning_rate = learning_rate;
-                best_network.hidden_layer = hidden_layer_size;
-                best_network.weight_input = weight_input;
-	            best_network.weight_output = weight_output;
-            }
-        }
+    for (int i = 0; i < output_layer_size; i++ ){
+        if (neural_output[i] - output[data_row][i] < error_tolerance)
+            correct_output++;
     }
+}
 
-    cout << "Best Network: " << best_network.hidden_layer << "\t" << best_network.learning_rate << "\t" << best_network.epoch << endl;
-    
-    epoch = best_network.epoch;
-    learning_rate = best_network.learning_rate;
-    hidden_layer_size = best_network.hidden_layer;
-    weight_input = best_network.weight_input;
-    weight_output = best_network.weight_output;
+void NeuralNetwork::hitRateCalculate(){
 
+    hit_percent = (correct_output*100) / (output.size() * output_layer_size);
+    correct_output = 0;
 }
 
 void NeuralNetwork::initializeWeight(){
