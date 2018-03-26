@@ -4,16 +4,17 @@
 int main(){
 
 	Neural::Dataset data_learning;
-		data_learning.loadInputOutputData(4, 3, "database/iris.txt");
+		data_learning.loadInputOutputData(2, 0, "database/test.txt");
 
 	vector<vector<double>> input = data_learning.getInput();
 	vector<vector<double>> output = data_learning.getOutput();
 
 	Neural::Network neural_network(input, output);
-		neural_network.setParameter(1000, 90, 0.05, 0.8, 6);
-		neural_network.training();
-		//neural_network.autoTraining(20, 0.2);
-		neural_network.run();
+		neural_network.setParameter(100, 80, 0.05, 0.8, 6);
+		//neural_network.trainingTemporal();
+		//neural_network.trainingClassification();
+		neural_network.autoTraining(10, 0.1);
+		//neural_network.run();
 }
 
-// g++ main.cpp NeuralNetwork.cpp Data.cpp -o machineLearnig -std=c++11 -Wall -g
+// g++ main.cpp src/Network.cpp src/Dataset.cpp -o machineLearnig -std=c++11 -Wall -g

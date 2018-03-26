@@ -73,7 +73,8 @@ public:
 
 	void run();
 
-	void training();
+	void trainingClassification();
+	void trainingTemporal();
 	void autoTraining(int, double);
 	void initializeWeight();
 	void hitRateCount(vector<double>, unsigned int);

@@ -11,7 +11,7 @@ void Dataset::saveOutputLog(){
 void Dataset::printMatrix(vector<vector<double>> v){
     for (unsigned int i = 0; i < v.size(); i++){
         for (unsigned int j = 0; j < v[i].size(); j++){
-            //cout << round(v[i][j]) << "\t";
+            //cout << round(v[i][j]) << "\t"; 
             cout << (v[i][j]) << "\t";
         }
         cout << endl;
@@ -62,9 +62,29 @@ void Dataset::loadInputOutputData(int n_input, int n_output, string file){
                 output_data[i].push_back(data);
             }
         }
+
+        normalize(input_data);
     }
 
     input.close();
+}
+
+void Dataset::normalize(vector<vector<double>> v) {
+    
+    for (unsigned int i = 0; i < v[0].size(); i++){
+        double max = v[0][i];
+        double min = v[0][i];
+        
+        for (unsigned int j = 0; j < v.size(); j++){
+            if (max < v[j][i]) max = v[j][i];
+            if (min > v[j][i]) min = v[j][i];
+        }
+
+        for (unsigned int j = 0; j < v.size(); j++){
+             input_data[j][i] = (v[j][i] - min) / (max - min);
+        }
+    }
+
 }
 
 vector<vector<double>> Dataset::getInput(){

@@ -9,6 +9,8 @@ Network::Network(vector<vector<double>> user_input, vector<vector<double>> user_
    
     setInput(user_input);
     setOutput(user_output);
+    output_layer_size = 1; // para teste
+
 }
 
 void Network::setParameter( int user_max_epoch, int user_desired_percent, double user_error_tolerance, double user_learning_rate, int user_hidden_layer_size){
@@ -32,28 +34,54 @@ void Network::run(){
     hitRateCalculate();    
 }
 
-void Network::training(){
+void Network::trainingClassification(){
     
     for (epoch = 0; epoch < max_epoch && hit_percent < desired_percent; epoch++) {
-        
         for (unsigned int data_row = 0; data_row < input.size(); data_row++){
-            
             ForwardPropagation forward = forwardPropagation(input[data_row]);
             backPropagation(forward, input[data_row], output[data_row]);
         }
-
         run();
     }
+    cout << hidden_layer_size << "\t" << learning_rate << "\t" << hit_percent << "% \t" << epoch << endl;
+}
+
+void Network::trainingTemporal(){
+    
+    for (epoch = 0; epoch < max_epoch && hit_percent < desired_percent; epoch++) {
+        for (unsigned int data_row = 0; data_row < input.size() - 1; data_row++) {
+            ForwardPropagation forward = forwardPropagation(input[data_row]);
+            backPropagation(forward, input[data_row], input[data_row + 1]);
+        }
+
+        for (unsigned int data_row = 0; data_row < input.size() - 1; data_row++) {
+            ForwardPropagation forward = forwardPropagation(input[data_row]);
+            
+            if ( abs(forward.output[1] - input[data_row + 1][1]) < error_tolerance)
+                correct_output++;
+        }
+
+        hit_percent = (correct_output * 100) / (input.size());
+        correct_output = 0;
+    }
+
+
+        for (unsigned int data_row = 0; data_row < input.size() - 1; data_row++) {
+            ForwardPropagation forward = forwardPropagation(input[data_row]);
+            cout << input[data_row + 1][1] << " -- " << forward.output[1] << endl;
+        }
+
 
     cout << hidden_layer_size << "\t" << learning_rate << "\t" << hit_percent << "% \t" << epoch << endl;
 }
 
 void Network::autoTraining(int hidden_layer_limit, double learning_rate_increase){
 
-    for (hidden_layer_size = 1; hidden_layer_size <= hidden_layer_limit; hidden_layer_size++){
+    for (hidden_layer_size = 3; hidden_layer_size <= hidden_layer_limit; hidden_layer_size++){
         for (learning_rate = learning_rate_increase; learning_rate <= 1; learning_rate = learning_rate + learning_rate_increase){
             initializeWeight();
-            training();
+            //trainingClassification();
+            trainingTemporal();
             if (epoch < best_network.epoch){
                 best_network.epoch = epoch;
                 best_network.learning_rate = learning_rate;
@@ -75,6 +103,8 @@ void Network::autoTraining(int hidden_layer_limit, double learning_rate_increase
 }
 
 Network::ForwardPropagation Network::forwardPropagation(vector<double> input_line){
+
+    input_line.push_back(1); // bias
 
     ForwardPropagation forward(hidden_layer_size, output_layer_size);
 
@@ -106,6 +136,8 @@ Network::ForwardPropagation Network::forwardPropagation(vector<double> input_lin
 }
 
 void Network::backPropagation(ForwardPropagation forward, vector<double> input_line, vector<double> output_line){
+
+    input_line.push_back(1); // bias
     
     BackPropagation back(hidden_layer_size);
 
@@ -114,7 +146,7 @@ void Network::backPropagation(ForwardPropagation forward, vector<double> input_l
         back.delta_output_sum.push_back((output_line[i] - forward.output[i]) * sigmoidPrime(forward.sum_output_weigth[i]));
     }
 
-// relação dos erros das saídas com a saída, multiplicado pela taxa de mudança da função de ativação no somatório da camada oculta (derivada)
+// erro da saída multiplicado pelos pesos de saída, aplicando a taxa de mudança da função de ativação no somatório da camada oculta (derivada)
     for (int i = 0; i < hidden_layer_size; i++ ){
         for (int j = 0; j < output_layer_size; j++ ){
             back.delta_input_sum[i] += back.delta_output_sum[j] * weight_output[i][j];
@@ -141,7 +173,7 @@ void Network::backPropagation(ForwardPropagation forward, vector<double> input_l
 void Network::hitRateCount(vector<double> neural_output, unsigned int data_row){
 
     for (int i = 0; i < output_layer_size; i++ ){
-        if (neural_output[i] - output[data_row][i] < error_tolerance)
+        if (abs(neural_output[i] - output[data_row][i]) < error_tolerance)
             correct_output++;
     }
 }
@@ -207,7 +239,7 @@ void Network::setErrorTolerance(double e){
 
 void Network::setInput(vector<vector<double>> i){
     input = i;
-    input_layer_size = i[0].size();
+    input_layer_size = i[0].size() + 1; // +1 bias
 }
 
 void Network::setOutput(vector<vector<double>> o){
